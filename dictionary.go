@@ -3,6 +3,7 @@ package yandex_dictionary
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -76,9 +77,22 @@ func (d *YandexDictionary) GetLangs() ([]string, error) {
 	}
 	defer resp.Body.Close()
 
-	var langs []string
-	if err := json.NewDecoder(resp.Body).Decode(&langs); err != nil {
+	var rawResponse interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&rawResponse); err != nil {
 		return nil, err
+	}
+
+	response, ok := rawResponse.(map[string]interface{})
+
+	// actually "ok" means "error" in this case because the response not an array of languages
+	// but a map with error code and message
+	if ok {
+		return nil, fmt.Errorf("(%v) %v", response["code"], response["message"])
+	}
+
+	var langs []string
+	for _, v := range rawResponse.([]interface{}) {
+		langs = append(langs, v.(string))
 	}
 
 	return langs, nil

@@ -20,70 +20,79 @@ func TestDictionaryAPI(t *testing.T) {
 			}
 		})
 
-		Convey("#Lookup", func() {
-			Convey("On success it returns translation of the word", func() {
-				Convey("with all possible fields filled in case of russian or english", func() {
-					entry, err := dict.Lookup(&YD{Lang: "en-ru", Text: "dog"})
-
-					So(err, ShouldBeNil)
-					So(entry, ShouldNotBeNil)
-
-					So(entry.Code, ShouldEqual, 0)
-					So(entry.Message, ShouldBeBlank)
-
-					So(entry.Def[0].Text, ShouldEqual, "dog")
-					So(entry.Def[0].Pos, ShouldEqual, "noun")
-					So(entry.Def[0].Ts, ShouldNotBeBlank)
-
-					So(entry.Def[0].Tr[0].Text, ShouldEqual, "собака")
-					So(entry.Def[0].Tr[0].Pos, ShouldEqual, "noun")
-
-					So(entry.Def[0].Tr[0].Syn[0].Text, ShouldNotBeBlank)
-					So(entry.Def[0].Tr[0].Mean[0].Text, ShouldNotBeBlank)
-					So(entry.Def[0].Tr[0].Ex[0].Text, ShouldNotBeBlank)
-					So(entry.Def[0].Tr[0].Ex[0].Tr[0].Text, ShouldNotBeBlank)
-				})
-
-				Convey("With some fields not fields in case of other languages", func() {
-					entry, err := dict.Lookup(&YD{Lang: "en-de", Text: "dog"})
-
-					So(err, ShouldBeNil)
-					So(entry, ShouldNotBeNil)
-
-					So(entry.Code, ShouldEqual, 0)
-					So(entry.Message, ShouldBeBlank)
-
-					So(entry.Def[0].Text, ShouldEqual, "dog")
-					So(entry.Def[0].Pos, ShouldEqual, "noun")
-					So(entry.Def[0].Ts, ShouldNotBeBlank)
-
-					So(entry.Def[0].Tr[0].Text, ShouldEqual, "Hund")
-					So(entry.Def[0].Tr[0].Pos, ShouldEqual, "noun")
-
-					So(entry.Def[0].Tr[0].Syn, ShouldBeEmpty)
-					So(entry.Def[0].Tr[0].Mean, ShouldNotBeEmpty)
-					So(entry.Def[0].Tr[0].Ex, ShouldBeEmpty)
-				})
-
-				Convey("Using different language for the interface", func() {
-					dict = NewUsingLang(API_KEY, "ru")
-					entry, _ := dict.Lookup(&YD{Lang: "en-ru", Text: "dog"})
-
-					So(entry.Def[0].Text, ShouldEqual, "dog")
-					So(entry.Def[0].Pos, ShouldEqual, "существительное")
-					So(entry.Def[0].Ts, ShouldNotBeBlank)
-
-					So(entry.Def[0].Tr[0].Text, ShouldEqual, "собака")
-					So(entry.Def[0].Tr[0].Pos, ShouldEqual, "существительное")
-				})
-			})
-
-			Convey("On failure it returns error", func() {
-				entry, err := dict.Lookup(&YD{Lang: "en-mumbayumba", Text: "dog"})
-
-				So(err, ShouldNotBeNil)
-				So(entry, ShouldBeNil)
-			})
+		Convey("On failure it returns error code and message", func() {
+			tr := New(API_KEY + "a")
+			response, err := tr.GetLangs()
+			So(response, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "(401) API key is invalid")
 		})
 	})
+
+	Convey("#Lookup", t, func() {
+		Convey("On success it returns translation of the word", func() {
+			Convey("with all possible fields filled in case of russian or english", func() {
+				entry, err := dict.Lookup(&YD{Lang: "en-ru", Text: "dog"})
+
+				So(err, ShouldBeNil)
+				So(entry, ShouldNotBeNil)
+
+				So(entry.Code, ShouldEqual, 0)
+				So(entry.Message, ShouldBeBlank)
+
+				So(entry.Def[0].Text, ShouldEqual, "dog")
+				So(entry.Def[0].Pos, ShouldEqual, "noun")
+				So(entry.Def[0].Ts, ShouldNotBeBlank)
+
+				So(entry.Def[0].Tr[0].Text, ShouldEqual, "собака")
+				So(entry.Def[0].Tr[0].Pos, ShouldEqual, "noun")
+
+				So(entry.Def[0].Tr[0].Syn[0].Text, ShouldNotBeBlank)
+				So(entry.Def[0].Tr[0].Mean[0].Text, ShouldNotBeBlank)
+				So(entry.Def[0].Tr[0].Ex[0].Text, ShouldNotBeBlank)
+				So(entry.Def[0].Tr[0].Ex[0].Tr[0].Text, ShouldNotBeBlank)
+			})
+
+			Convey("With some fields not fields in case of other languages", func() {
+				entry, err := dict.Lookup(&YD{Lang: "en-de", Text: "dog"})
+
+				So(err, ShouldBeNil)
+				So(entry, ShouldNotBeNil)
+
+				So(entry.Code, ShouldEqual, 0)
+				So(entry.Message, ShouldBeBlank)
+
+				So(entry.Def[0].Text, ShouldEqual, "dog")
+				So(entry.Def[0].Pos, ShouldEqual, "noun")
+				So(entry.Def[0].Ts, ShouldNotBeBlank)
+
+				So(entry.Def[0].Tr[0].Text, ShouldEqual, "Hund")
+				So(entry.Def[0].Tr[0].Pos, ShouldEqual, "noun")
+
+				So(entry.Def[0].Tr[0].Syn, ShouldBeEmpty)
+				So(entry.Def[0].Tr[0].Mean, ShouldNotBeEmpty)
+				So(entry.Def[0].Tr[0].Ex, ShouldBeEmpty)
+			})
+
+			Convey("Using different language for the interface", func() {
+				dict = NewUsingLang(API_KEY, "ru")
+				entry, _ := dict.Lookup(&YD{Lang: "en-ru", Text: "dog"})
+
+				So(entry.Def[0].Text, ShouldEqual, "dog")
+				So(entry.Def[0].Pos, ShouldEqual, "существительное")
+				So(entry.Def[0].Ts, ShouldNotBeBlank)
+
+				So(entry.Def[0].Tr[0].Text, ShouldEqual, "собака")
+				So(entry.Def[0].Tr[0].Pos, ShouldEqual, "существительное")
+			})
+		})
+
+		Convey("On failure it returns error", func() {
+			entry, err := dict.Lookup(&YD{Lang: "en-mumbayumba", Text: "dog"})
+
+			So(err, ShouldNotBeNil)
+			So(entry, ShouldBeNil)
+		})
+	})
+
 }
