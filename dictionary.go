@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	LANGS_URL  = "https://dictionary.yandex.net/api/v1/dicservice.json/getLangs"
-	LOOKUP_URL = "https://dictionary.yandex.net/api/v1/dicservice.json/lookup"
+	URL_ROOT    = "https://dictionary.yandex.net/api/v1/dicservice.json"
+	LANGS_PATH  = "getLangs"
+	LOOKUP_PATH = "lookup"
 )
 
 type YandexDictionary struct {
@@ -69,7 +70,7 @@ func NewUsingLang(apiKey string, ui string) *YandexDictionary {
 }
 
 func (d *YandexDictionary) GetLangs() ([]string, error) {
-	resp, err := http.PostForm(LANGS_URL, url.Values{"key": {d.apiKey}})
+	resp, err := http.PostForm(absUrl(LANGS_PATH), url.Values{"key": {d.apiKey}})
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +87,7 @@ func (d *YandexDictionary) GetLangs() ([]string, error) {
 func (d *YandexDictionary) Lookup(params *YD) (*YandexDictionaryEntry, error) {
 	flagsMask := d.buildFlagsMask(params)
 	builtParams := url.Values{"key": {d.apiKey}, "ui": {d.ui}, "lang": {params.Lang}, "text": {params.Text}, "flags": {flagsMask}}
-	resp, err := http.PostForm(LOOKUP_URL, builtParams)
+	resp, err := http.PostForm(absUrl(LOOKUP_PATH), builtParams)
 	if err != nil {
 		return nil, err
 	}
@@ -102,6 +103,10 @@ func (d *YandexDictionary) Lookup(params *YD) (*YandexDictionaryEntry, error) {
 	}
 
 	return &entry, nil
+}
+
+func absUrl(route string) string {
+	return URL_ROOT + "/" + route
 }
 
 func (d *YandexDictionary) buildFlagsMask(params *YD) string {
