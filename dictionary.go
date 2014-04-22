@@ -1,4 +1,4 @@
-package dictionary
+package yandex_dictionary
 
 import (
 	"encoding/json"
