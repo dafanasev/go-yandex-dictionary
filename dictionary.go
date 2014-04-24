@@ -28,34 +28,34 @@ type YD struct {
 	PosFilter bool
 }
 
-type YandexDictionaryEntry struct {
+type Entry struct {
 	Code    int
 	Message string
-	Def     []YandexDictionaryDef
+	Def     []Def
 }
 
-type YandexDictionaryDef struct {
+type Def struct {
 	Text string
 	Pos  string
 	Ts   string
-	Tr   []YandexDictionaryTr
+	Tr   []Tr
 }
 
-type YandexDictionaryTr struct {
+type Tr struct {
 	Text string
 	Pos  string
 	Ts   string
-	Syn  []YandexDictionaryText
-	Mean []YandexDictionaryText
-	Ex   []YandexDictionaryEx
+	Syn  []Text
+	Mean []Text
+	Ex   []Ex
 }
 
-type YandexDictionaryEx struct {
+type Ex struct {
 	Text string
-	Tr   []YandexDictionaryText
+	Tr   []Text
 }
 
-type YandexDictionaryText struct {
+type Text struct {
 	Text string
 }
 
@@ -98,7 +98,7 @@ func (d *YandexDictionary) GetLangs() ([]string, error) {
 	return langs, nil
 }
 
-func (d *YandexDictionary) Lookup(params *YD) (*YandexDictionaryEntry, error) {
+func (d *YandexDictionary) Lookup(params *YD) (*Entry, error) {
 	flagsMask := d.buildFlagsMask(params)
 	builtParams := url.Values{"key": {d.apiKey}, "ui": {d.ui}, "lang": {params.Lang}, "text": {params.Text}, "flags": {flagsMask}}
 	resp, err := http.PostForm(absUrl(LOOKUP_PATH), builtParams)
@@ -107,7 +107,7 @@ func (d *YandexDictionary) Lookup(params *YD) (*YandexDictionaryEntry, error) {
 	}
 	defer resp.Body.Close()
 
-	var entry YandexDictionaryEntry
+	var entry Entry
 	if err := json.NewDecoder(resp.Body).Decode(&entry); err != nil {
 		return nil, err
 	}
