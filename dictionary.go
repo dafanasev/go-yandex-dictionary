@@ -2,7 +2,6 @@ package yandex_dictionary
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -113,7 +112,7 @@ func (d *YandexDictionary) Lookup(params *YD) (*Entry, error) {
 	}
 
 	if entry.Code != 0 {
-		return nil, errors.New(entry.Message)
+		return nil, fmt.Errorf("(%v) %v", entry.Code, entry.Message)
 	}
 
 	return &entry, nil
