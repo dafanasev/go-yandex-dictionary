@@ -19,7 +19,7 @@ type YandexDictionary struct {
 	ui     string
 }
 
-type YD struct {
+type Params struct {
 	Lang      string
 	Text      string
 	Family    bool
@@ -97,7 +97,7 @@ func (d *YandexDictionary) GetLangs() ([]string, error) {
 	return langs, nil
 }
 
-func (d *YandexDictionary) Lookup(params *YD) (*Entry, error) {
+func (d *YandexDictionary) Lookup(params *Params) (*Entry, error) {
 	flagsMask := d.buildFlagsMask(params)
 	builtParams := url.Values{"key": {d.apiKey}, "ui": {d.ui}, "lang": {params.Lang}, "text": {params.Text}, "flags": {flagsMask}}
 	resp, err := http.PostForm(absUrl(LOOKUP_PATH), builtParams)
@@ -122,7 +122,7 @@ func absUrl(route string) string {
 	return URL_ROOT + "/" + route
 }
 
-func (d *YandexDictionary) buildFlagsMask(params *YD) string {
+func (d *YandexDictionary) buildFlagsMask(params *Params) string {
 	const (
 		FAMILY     = 0x0001
 		MORPHO     = 0x0004

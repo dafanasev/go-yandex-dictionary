@@ -32,7 +32,7 @@ func TestDictionaryAPI(t *testing.T) {
 	Convey("#Lookup", t, func() {
 		Convey("On success it returns translation of the word", func() {
 			Convey("with all possible fields filled in case of russian or english", func() {
-				entry, err := dict.Lookup(&YD{Lang: "en-ru", Text: "dog"})
+				entry, err := dict.Lookup(&Params{Lang: "en-ru", Text: "dog"})
 
 				So(err, ShouldBeNil)
 				So(entry, ShouldNotBeNil)
@@ -54,7 +54,7 @@ func TestDictionaryAPI(t *testing.T) {
 			})
 
 			Convey("With some fields not fields in case of other languages", func() {
-				entry, err := dict.Lookup(&YD{Lang: "en-de", Text: "dog"})
+				entry, err := dict.Lookup(&Params{Lang: "en-de", Text: "dog"})
 
 				So(err, ShouldBeNil)
 				So(entry, ShouldNotBeNil)
@@ -76,7 +76,7 @@ func TestDictionaryAPI(t *testing.T) {
 
 			Convey("Using different language for the interface", func() {
 				dict = NewUsingLang(API_KEY, "ru")
-				entry, _ := dict.Lookup(&YD{Lang: "en-ru", Text: "dog"})
+				entry, _ := dict.Lookup(&Params{Lang: "en-ru", Text: "dog"})
 
 				So(entry.Def[0].Text, ShouldEqual, "dog")
 				So(entry.Def[0].Pos, ShouldEqual, "существительное")
@@ -88,7 +88,7 @@ func TestDictionaryAPI(t *testing.T) {
 		})
 
 		Convey("On failure it returns error", func() {
-			entry, err := dict.Lookup(&YD{Lang: "en-mumbayumba", Text: "dog"})
+			entry, err := dict.Lookup(&Params{Lang: "en-mumbayumba", Text: "dog"})
 
 			So(err, ShouldNotBeNil)
 			So(entry, ShouldBeNil)
