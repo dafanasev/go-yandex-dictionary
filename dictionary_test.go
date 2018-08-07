@@ -1,17 +1,17 @@
-package yandex_dictionary
+package dictionary
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 )
 
-const API_KEY = "dict.1.1.20140416T183822Z.3b90bf5bedccc85b.93d3bab6d7fb38c57e7fd1ebd1aa6442bb64876a"
+const apiKey = "dict.1.1.20140416T183822Z.3b90bf5bedccc85b.93d3bab6d7fb38c57e7fd1ebd1aa6442bb64876a"
 
 func TestDictionaryAPI(t *testing.T) {
-	dict := New(API_KEY)
+	dict := New(apiKey)
 
 	Convey("#GetLangs", t, func() {
-		Convey("On sucess it returns available languages", func() {
+		Convey("On success it returns available languages", func() {
 			langs, _ := dict.GetLangs()
 			So(langs, ShouldNotBeEmpty)
 			pairs := []string{"ru-ru", "ru-en", "ru-de", "ru-it", "ru-fr", "en-de", "en-it", "en-ru"}
@@ -21,7 +21,7 @@ func TestDictionaryAPI(t *testing.T) {
 		})
 
 		Convey("On failure it returns error code and message", func() {
-			tr := New(API_KEY + "a")
+			tr := New(apiKey + "a")
 			response, err := tr.GetLangs()
 			So(response, ShouldBeNil)
 			So(err, ShouldNotBeNil)
@@ -75,7 +75,7 @@ func TestDictionaryAPI(t *testing.T) {
 			})
 
 			Convey("Using different language for the interface", func() {
-				dict = NewUsingLang(API_KEY, "ru")
+				dict = NewUsingLang(apiKey, "ru")
 				entry, _ := dict.Lookup(&Params{Lang: "en-ru", Text: "dog"})
 
 				So(entry.Def[0].Text, ShouldEqual, "dog")

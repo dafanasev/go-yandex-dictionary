@@ -1,7 +1,7 @@
 go-yandex-dictionary
 ====================
 
-Yandex Dictionary Go (golang) API wrapper
+Go Yandex Dictionary API wrapper
 
 Usage:
 
@@ -10,11 +10,11 @@ package main
 
 import (
   "fmt"
-  "github.com/icrowley/go-yandex-dictionary"
+  "github.com/dafanasev/go-yandex-dictionary"
 )
 
 func main() {
-  dict := yandex_dictionary.New("YOUR_API_KEY")
+  dict := dictionary.New("YOUR_API_KEY")
 
   langs, err := dict.GetLangs()
 
@@ -24,7 +24,7 @@ func main() {
     fmt.Println(langs)
   }
 
-  definition, err := dict.Lookup(&yandex_dictionary.Params{Lang: "en-ru", Text: "Dog"})
+  definition, err := dict.Lookup(&dictionary.Params{Lang: "en-ru", Text: "Dog"})
 
   if err != nil {
     fmt.Println(err)
