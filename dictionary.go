@@ -1,3 +1,4 @@
+// Package dictionary is the Yandex.Dictionary API client
 package dictionary
 
 import (
@@ -112,7 +113,7 @@ func (d *Dictionary) GetLangs() ([]string, error) {
 // Lookup returns results of api request wrapped in Entry structs
 func (d *Dictionary) Lookup(params *Params) (*Entry, error) {
 	errMsg := fmt.Sprintf("can't get definitions for %s", params.Text)
-	
+
 	flagsMask := d.buildFlagsMask(params)
 	builtParams := url.Values{"key": {d.apiKey}, "ui": {d.ui}, "lang": {params.Lang}, "text": {params.Text}, "flags": {flagsMask}}
 	resp, err := http.PostForm(absURL(lookupPath), builtParams)
@@ -129,7 +130,7 @@ func (d *Dictionary) Lookup(params *Params) (*Entry, error) {
 	if entry.Code != 0 {
 		return nil, errors.Errorf("%s: (%d) %s", errMsg, entry.Code, entry.Message)
 	}
-	
+
 	if len(entry.Def) == 0 {
 		return nil, errors.Errorf("%s: definitions are empty", errMsg)
 	}
